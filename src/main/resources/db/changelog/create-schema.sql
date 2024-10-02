@@ -1,0 +1,1 @@
+create schema if not exists todolist_schema authorization root;
