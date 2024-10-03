@@ -3,7 +3,9 @@ package org.example.todolistbackend.controller;
 
 import lombok.AllArgsConstructor;
 import org.example.todolistbackend.config.JwtService;
+import org.example.todolistbackend.dto.UserLoginDTO;
 import org.example.todolistbackend.dto.UserRegisterDTO;
+import org.example.todolistbackend.dto.response.LoginResponse;
 import org.example.todolistbackend.entity.User;
 import org.example.todolistbackend.service.AuthenticationService;
 import org.springframework.http.ResponseEntity;
@@ -22,7 +24,17 @@ public class AuthenticationController {
     private final AuthenticationService authenticationService;
 
     @PostMapping("/register")
-    public ResponseEntity<User> register(@RequestBody UserRegisterDTO user) {
-        return ResponseEntity.ok(authenticationService.signup(user));
+    public ResponseEntity<User> register(@RequestBody UserRegisterDTO input) {
+        return ResponseEntity.ok(authenticationService.signup(input));
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<LoginResponse> login(@RequestBody UserLoginDTO input) {
+        User authenticatedUser = authenticationService.authenticate(input);
+        String token = jwtService.generateToken(authenticatedUser);
+        LoginResponse loginResponse = new LoginResponse();
+        loginResponse.setToken(token);
+        loginResponse.setExpiresIn(jwtService.getExpirationTime());
+        return ResponseEntity.ok(loginResponse);
     }
 }
