@@ -1,22 +1,16 @@
-package org.example.todolistbackend.dto;
+package org.example.todolistbackend.dto.request;
 
 import lombok.*;
 
-@Data
 @Builder
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ToDoDTO {
+public class ToDoRequest {
 
     @Getter @Setter
     private String title;
 
     @Getter @Setter
     private String description;
-
-    @Getter @Setter
-    private Long userId;
-
-    @Getter @Setter
-    private String username;
 }

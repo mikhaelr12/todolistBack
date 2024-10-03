@@ -1,11 +1,13 @@
 package org.example.todolistbackend.entity;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
+@Builder
 @Table(name = "todos")
 @Entity
+@AllArgsConstructor
+@NoArgsConstructor
 public class ToDo {
 
     @Id
@@ -22,6 +24,7 @@ public class ToDo {
     @Column(name = "description")
     private String description;
 
+    @Setter
     @Column(name = "user_id")
     @JoinColumn(foreignKey = @ForeignKey(name = "FK_USER_TODO"))
     private Long userId;
