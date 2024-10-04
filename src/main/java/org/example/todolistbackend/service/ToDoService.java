@@ -12,7 +12,7 @@ public interface ToDoService {
 
     List<ToDoRequest> getAllTasks(String jwtToken);
 
-    boolean deleteTask(String jwtToken, String taskTitle);
+    boolean deleteTask(String jwtToken, Long taskId);
 
-    boolean updateTask(String token, ToDoDTO taskData, String taskTitle);
+    boolean updateTask(String token, ToDoDTO taskData, Long taskId);
 }

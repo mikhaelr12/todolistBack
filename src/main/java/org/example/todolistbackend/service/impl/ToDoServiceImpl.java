@@ -61,11 +61,11 @@ public class ToDoServiceImpl implements ToDoService {
     }
 
     @Override
-    public boolean deleteTask(String jwtToken, String taskTitle) {
+    public boolean deleteTask(String jwtToken, Long taskId) {
         User user = getUser(jwtToken);
         List<ToDo> getAllTasks = toDoRepository.getAllTasksByUserId(user.getId());
         ToDo taskToDelete = getAllTasks.stream()
-                .filter(t -> t.getTitle().equals(taskTitle))
+                .filter(t -> t.getId().equals(taskId))
                 .findFirst()
                 .orElseThrow(() -> new ToDoException("Task not found"));
         toDoRepository.delete(taskToDelete);
@@ -73,19 +73,17 @@ public class ToDoServiceImpl implements ToDoService {
     }
 
     @Override
-    public boolean updateTask(String token, ToDoDTO taskData, String title) {
+    public boolean updateTask(String token, ToDoDTO taskData, Long taskId) {
         User user = getUser(token);
         List<ToDo> getAllTasks = toDoRepository.getAllTasksByUserId(user.getId());
         ToDo taskToEdit = getAllTasks.stream()
-                .filter(t -> t.getTitle().equals(title))
+                .filter(t -> t.getId().equals(taskId))
                 .findFirst()
                 .orElseThrow(() -> new ToDoException("No task found"));
-        if(taskData.getTitle().isEmpty()){
+        if(!taskData.getDescription().isEmpty()){
             taskToEdit.setDescription(taskData.getDescription());
+            return true;
         }
-        else{
-            taskToEdit.setTitle(taskData.getTitle());
-        }
-        return true;
+        return false;
     }
 }
