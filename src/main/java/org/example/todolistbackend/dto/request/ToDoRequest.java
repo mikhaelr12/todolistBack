@@ -8,6 +8,9 @@ import lombok.*;
 @NoArgsConstructor
 public class ToDoRequest {
 
+    @Getter
+    private Long id;
+
     @Getter @Setter
     private String title;
 

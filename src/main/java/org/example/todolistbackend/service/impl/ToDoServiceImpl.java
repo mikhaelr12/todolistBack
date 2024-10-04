@@ -9,14 +9,13 @@ import org.example.todolistbackend.dto.ToDoDTO;
 import org.example.todolistbackend.dto.request.ToDoRequest;
 import org.example.todolistbackend.entity.ToDo;
 import org.example.todolistbackend.entity.User;
-import org.example.todolistbackend.exception.UserException;
+import org.example.todolistbackend.exception.ToDoException;
 import org.example.todolistbackend.repository.ToDoRepository;
 import org.example.todolistbackend.repository.UserRepository;
 import org.example.todolistbackend.service.ToDoService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -32,12 +31,15 @@ public class ToDoServiceImpl implements ToDoService {
     private JwtService jwtService;
 
 
+    private User getUser(String jwtToken){
+        String username = jwtService.extractUsername(jwtToken);
+        return userRepository.findByUsername(username).orElse(null);
+    }
+
     @Override
     public ToDo addTask(ToDoDTO taskInput, String token) {
-        String username = jwtService.extractUsername(token);
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new UserException("User not found"));
-       return toDoRepository.save(
+        User user = getUser(token);
+        return toDoRepository.save(
                ToDo.builder()
                        .title(taskInput.getTitle())
                        .description(taskInput.getDescription())
@@ -48,14 +50,42 @@ public class ToDoServiceImpl implements ToDoService {
 
     @Override
     public List<ToDoRequest> getAllTasks(String jwtToken) {
-        String username = jwtService.extractUsername(jwtToken);
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new UserException("User not found"));
+        User user = getUser(jwtToken);
+        log.info("User ID: {}", user.getId());
         List<ToDo> allTasks = toDoRepository.getAllTasksByUserId(user.getId());
         return allTasks.stream().map(task -> ToDoRequest.builder()
                 .title(task.getTitle())
                 .description(task.getDescription())
                 .build()
         ).collect(Collectors.toList());
+    }
+
+    @Override
+    public boolean deleteTask(String jwtToken, String taskTitle) {
+        User user = getUser(jwtToken);
+        List<ToDo> getAllTasks = toDoRepository.getAllTasksByUserId(user.getId());
+        ToDo taskToDelete = getAllTasks.stream()
+                .filter(t -> t.getTitle().equals(taskTitle))
+                .findFirst()
+                .orElseThrow(() -> new ToDoException("Task not found"));
+        toDoRepository.delete(taskToDelete);
+        return true;
+    }
+
+    @Override
+    public boolean updateTask(String token, ToDoDTO taskData, String title) {
+        User user = getUser(token);
+        List<ToDo> getAllTasks = toDoRepository.getAllTasksByUserId(user.getId());
+        ToDo taskToEdit = getAllTasks.stream()
+                .filter(t -> t.getTitle().equals(title))
+                .findFirst()
+                .orElseThrow(() -> new ToDoException("No task found"));
+        if(taskData.getTitle().isEmpty()){
+            taskToEdit.setDescription(taskData.getDescription());
+        }
+        else{
+            taskToEdit.setTitle(taskData.getTitle());
+        }
+        return true;
     }
 }

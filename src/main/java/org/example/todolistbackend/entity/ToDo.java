@@ -14,6 +14,7 @@ public class ToDo {
     @Column(name = "id", nullable = false)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "todo_id_seq")
     @SequenceGenerator(name = "todo_id_seq", sequenceName = "todo_id_seq", allocationSize = 1)
+    @Getter @Setter
     private Long id;
 
     @Getter @Setter
