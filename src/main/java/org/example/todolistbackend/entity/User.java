@@ -1,10 +1,7 @@
 package org.example.todolistbackend.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -12,6 +9,7 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
 
+@Builder
 @Table(name = "users")
 @Entity
 @NoArgsConstructor
@@ -22,6 +20,7 @@ public class User implements UserDetails {
     @Column(name = "id",nullable = false)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "user_id_seq")
     @SequenceGenerator(name = "user_id_seq", sequenceName = "user_id_seq", allocationSize = 1)
+    @Getter
     private Long id;
 
     @Getter @Setter
