@@ -17,21 +17,24 @@ public class ToDoController {
 
     private ToDoService toDoService;
 
+    private String getToken(String token){
+        return token.startsWith("Bearer ") ? token.substring(7) : token;
+    }
     @PostMapping()
     public ResponseEntity<?> addTask(@RequestBody ToDoDTO taskData, @RequestHeader("Authorization") String token){
-        String jwtToken = token.startsWith("Bearer ") ? token.substring(7) : token;
+        String jwtToken = getToken(token);
         return ResponseEntity.ok(toDoService.addTask(taskData, jwtToken));
     }
 
     @GetMapping()
     public ResponseEntity<List<ToDoRequest>> getAllTasks(@RequestHeader("Authorization") String token){
-        String jwtToken = token.startsWith("Bearer ") ? token.substring(7) : token;
+        String jwtToken = getToken(token);
         return ResponseEntity.ok(toDoService.getAllTasks(jwtToken));
     }
 
     @DeleteMapping("/{taskId}")
     public ResponseEntity<?> deleteTask(@RequestHeader("Authorization") String token, @PathVariable Long taskId){
-        String jwtToken = token.startsWith("Bearer ") ? token.substring(7) : token;
+        String jwtToken = getToken(token);
         boolean isDeleted;
         if (toDoService.deleteTask(jwtToken, taskId)) isDeleted = true;
         else isDeleted = false;
@@ -41,10 +44,10 @@ public class ToDoController {
     @PutMapping("/{taskId}")
     public ResponseEntity<?> updateTask(@RequestHeader("Authorization") String token, @RequestBody ToDoDTO taskData,
                                         @PathVariable Long taskId){
-        String jwtToken = token.startsWith("Bearer ") ? token.substring(7) : token;
+        String jwtToken = getToken(token);
         boolean isUpdated;
         if(toDoService.updateTask(jwtToken, taskData, taskId)) isUpdated = true;
         else isUpdated = false;
-        return isUpdated ? ResponseEntity.ok().build() : ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        return isUpdated ? ResponseEntity.ok().build() : ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
 }

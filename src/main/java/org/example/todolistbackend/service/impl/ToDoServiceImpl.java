@@ -54,6 +54,7 @@ public class ToDoServiceImpl implements ToDoService {
         log.info("User ID: {}", user.getId());
         List<ToDo> allTasks = toDoRepository.getAllTasksByUserId(user.getId());
         return allTasks.stream().map(task -> ToDoRequest.builder()
+                .id(task.getId())
                 .title(task.getTitle())
                 .description(task.getDescription())
                 .build()
